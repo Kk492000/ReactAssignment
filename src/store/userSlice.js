@@ -8,10 +8,7 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
 });
 
 export const editUser = createAsyncThunk("users/editUser", async (user) => {
-  const response = await axios.put(
-    `https://jsonplaceholder.typicode.com/users/${user.id}`,
-    user
-  );
+  const response = await axios.put(`${apiConfig.getUsers}/${user.id}`, user);
   return response.data;
 });
 

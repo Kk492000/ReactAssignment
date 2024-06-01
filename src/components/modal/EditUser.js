@@ -20,6 +20,8 @@ import { Formik, Form } from "formik";
 import ContainedButton from "../ui/ContainedButton";
 import * as Yup from "yup";
 import { Colors } from "../../constants/colors";
+import { useDispatch } from "react-redux";
+import { editUser } from "../../store/userSlice";
 
 const useStyles = makeStyles((theme) => ({
   dialogContainer: {
@@ -92,15 +94,16 @@ const validationSchema = Yup.object({
   website: Yup.string().required("Website is required"),
 });
 
-const initialValues = {
-  name: "",
-  email: "",
-  phone: "",
-  website: "",
-};
-
-const EditUser = ({ openModal, onCloseModal }) => {
+const EditUser = ({ openModal, onCloseModal, user }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const initialValues = {
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    phone: user?.phone ?? "",
+    website: user?.website ?? "",
+  };
 
   if (!openModal) return null;
 
@@ -123,6 +126,7 @@ const EditUser = ({ openModal, onCloseModal }) => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
+          dispatch(editUser({ ...user, ...values }));
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));
             setSubmitting(false);
@@ -138,7 +142,6 @@ const EditUser = ({ openModal, onCloseModal }) => {
           isSubmitting,
         }) => (
           <Form>
-            {console.log(errors, "errors")}
             <DialogContent>
               <Box className={classes.labelInputContainer}>
                 <Typography>

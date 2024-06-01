@@ -123,7 +123,11 @@ const User = ({ user, diceBearUrl }) => {
         </Box>
       </Grid>
 
-      <EditUser openModal={openModal} onCloseModal={closeModalHandler} />
+      <EditUser
+        openModal={openModal}
+        onCloseModal={closeModalHandler}
+        user={user}
+      />
     </>
   );
 };
