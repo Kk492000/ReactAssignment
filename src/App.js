@@ -1,15 +1,13 @@
 import { useSelector } from "react-redux";
 import "./App.css";
 import Loader from "./components/Loader/Loader";
+import UserList from "./components/ui/UserList";
 
 function App() {
-  let content = <Loader />;
   const selector = useSelector((state) => state.counter.counter);
-  console.log(selector, "selector");
   return (
-    <div className="App">
-      {content}
-      <h1>React Assignment</h1>
+    <div className="App" style={{ width: "100%" }}>
+      <UserList />
     </div>
   );
 }
