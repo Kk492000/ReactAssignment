@@ -7,6 +7,7 @@
     "@dicebear/collection": "^8.0.1",
     "@dicebear/core": "^8.0.1",
     "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
     "@reduxjs/toolkit": "^2.2.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -14,13 +15,15 @@
     "antd": "^5.17.4",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "formik": "^2.4.6",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-redux": "^9.1.2",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

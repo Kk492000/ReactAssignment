@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Grid, Typography, makeStyles } from "@material-ui/core";
-import { MailOutlined, PhoneOutlined } from "@ant-design/icons";
+import {
+  MailOutlined,
+  PhoneOutlined,
+  HeartOutlined,
+  EditOutlined,
+  DeleteFilled,
+} from "@ant-design/icons";
+import EditUser from "../modal/EditUser";
 
 const useStyles = makeStyles((theme) => ({
   userGridContainer: {
@@ -36,10 +43,26 @@ const useStyles = makeStyles((theme) => ({
       fontSize: "14px",
     },
   },
+  iconsParent: {
+    display: "flex",
+    justifyContent: "center",
+    borderRight: "1px solid #ccc",
+    "& span": {
+      cursor: "pointer",
+    },
+  },
 }));
 
 const User = ({ user, diceBearUrl }) => {
   const classes = useStyles();
+  const [openModal, setOpenModal] = useState(false);
+
+  function closeModalHandler() {
+    setOpenModal(false);
+  }
+  function openModalHandler() {
+    setOpenModal(true);
+  }
 
   return (
     <>
@@ -54,7 +77,7 @@ const User = ({ user, diceBearUrl }) => {
       >
         <Box className={classes.gridBox}>
           <Box className={classes.imgContainer}>
-            <img src={diceBearUrl} width="100px" />
+            <img src={diceBearUrl} width="100px" alt={user.name} />
           </Box>
           <Box className={classes.infoContainer}>
             <Typography className="userName">{user.name}</Typography>
@@ -71,8 +94,30 @@ const User = ({ user, diceBearUrl }) => {
               <Typography>{user.website}</Typography>
             </Box>
           </Box>
+          <Box style={{ background: "#F8F8F8", padding: "12px 0" }}>
+            <Grid container>
+              <Grid item xs={4}>
+                <Box className={classes.iconsParent}>
+                  <HeartOutlined style={{ color: "#ff0000" }} />
+                  {/* <HeartFilled /> */}
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Box className={classes.iconsParent}>
+                  <EditOutlined onClick={openModalHandler} />
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Box className={classes.iconsParent}>
+                  <DeleteFilled />
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
       </Grid>
+
+      <EditUser openModal={openModal} onCloseModal={closeModalHandler} />
     </>
   );
 };

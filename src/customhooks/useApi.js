@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 const useApi = (url) => {
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     setLoader(true);
     try {
       const response = await axios({
@@ -18,12 +18,17 @@ const useApi = (url) => {
       } else {
         alert("Error Fetching Users Data");
       }
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setLoader(false);
+      alert("Connection Error");
+    }
+  }, [url]);
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [getData]);
+
   return { data, loader };
 };
 
