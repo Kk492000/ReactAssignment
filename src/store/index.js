@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./slice";
+import { thunk } from "redux-thunk";
+import userReducer from "./userSlice";
+
 const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    users: userReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
 
 export default store;

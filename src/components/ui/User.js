@@ -8,6 +8,8 @@ import {
   DeleteFilled,
 } from "@ant-design/icons";
 import EditUser from "../modal/EditUser";
+import { useDispatch } from "react-redux";
+import { deleteUser } from "../../store/userSlice";
 
 const useStyles = makeStyles((theme) => ({
   userGridContainer: {
@@ -55,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 const User = ({ user, diceBearUrl }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
 
   function closeModalHandler() {
@@ -62,6 +65,9 @@ const User = ({ user, diceBearUrl }) => {
   }
   function openModalHandler() {
     setOpenModal(true);
+  }
+  function deleteUserHandler(userId) {
+    dispatch(deleteUser(userId));
   }
 
   return (
@@ -109,7 +115,7 @@ const User = ({ user, diceBearUrl }) => {
               </Grid>
               <Grid item xs={4}>
                 <Box className={classes.iconsParent}>
-                  <DeleteFilled />
+                  <DeleteFilled onClick={() => deleteUserHandler(user.id)} />
                 </Box>
               </Grid>
             </Grid>
