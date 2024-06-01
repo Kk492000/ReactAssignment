@@ -38,8 +38,8 @@ export const Colors = {
   border: "#E0E0E0", // Border color
 
   // Text Colors
-  textPrimary: "#212121", // Primary text color
-  textSecondary: "#757575", // Secondary text color
+  textPrimary: "#212121",
+  textSecondary: "#757575",
   textDisabled: "#BDBDBD",
 
   backgroundDefault: "#FAFAFA",

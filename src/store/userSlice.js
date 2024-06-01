@@ -23,8 +23,19 @@ const userSlice = createSlice({
     users: [],
     status: "idle",
     error: null,
+    favourites: [],
   },
-  reducers: {},
+  reducers: {
+    toggleFavourite(state, action) {
+      const userId = action.payload;
+      console.log(state.favourites.includes(userId), "userIdd");
+      if (state.favourites.includes(userId)) {
+        state.favourites = state.favourites.filter((id) => id !== userId);
+      } else {
+        state.favourites.push(userId);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -49,5 +60,7 @@ const userSlice = createSlice({
       });
   },
 });
+
+export const { toggleFavourite } = userSlice.actions;
 
 export default userSlice.reducer;

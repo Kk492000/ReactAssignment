@@ -6,10 +6,12 @@ import {
   HeartOutlined,
   EditOutlined,
   DeleteFilled,
+  HeartFilled,
 } from "@ant-design/icons";
 import EditUser from "../modal/EditUser";
-import { useDispatch } from "react-redux";
-import { deleteUser } from "../../store/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteUser, toggleFavourite } from "../../store/userSlice";
+import { Colors } from "../../constants/colors";
 
 const useStyles = makeStyles((theme) => ({
   userGridContainer: {
@@ -18,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   gridBox: {
-    border: "0.5px solid #ccc",
+    border: `0.5px solid ${Colors.border}`,
     width: "100%",
     borderRadius: "3px",
   },
@@ -34,10 +36,10 @@ const useStyles = makeStyles((theme) => ({
   imgContainer: {
     display: "flex",
     justifyContent: "center",
-    background: "#F8F8F8",
+    background: `${Colors.backgroundDefault}`,
   },
   infoContainer: {
-    padding: "20px 20px",
+    padding: "20px",
     "& .userName": {
       fontFamily: "Mulish",
       marginBottom: "5px",
@@ -52,6 +54,22 @@ const useStyles = makeStyles((theme) => ({
     "& span": {
       cursor: "pointer",
     },
+    "& .deleteIcon, & .heartIcon": {
+      "&:hover": {
+        color: "#ff0000",
+      },
+    },
+    "& .heartIcon": {
+      color: "#ff0000",
+    },
+    "& .deleteIcon, & .editIcon": {
+      color: "gray",
+    },
+    "& .editIcon": {
+      "&:hover": {
+        color: Colors.primary,
+      },
+    },
   },
 }));
 
@@ -59,16 +77,19 @@ const User = ({ user, diceBearUrl }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
+  const favourites = useSelector((state) => state.users.favourites);
 
-  function closeModalHandler() {
-    setOpenModal(false);
-  }
-  function openModalHandler() {
-    setOpenModal(true);
-  }
-  function deleteUserHandler(userId) {
-    dispatch(deleteUser(userId));
-  }
+  const handleModalToggle = () => setOpenModal((prev) => !prev);
+
+  const handleUserAction = (action) => {
+    if (action === "delete") {
+      dispatch(deleteUser(user.id));
+    } else if (action === "toggleFavourite") {
+      dispatch(toggleFavourite(user.id));
+    }
+  };
+
+  const isFavorite = favourites.includes(user.id);
 
   return (
     <>
@@ -87,37 +108,53 @@ const User = ({ user, diceBearUrl }) => {
           </Box>
           <Box className={classes.infoContainer}>
             <Typography className="userName">{user.name}</Typography>
-            <Box className={classes.userInfo}>
-              <MailOutlined />
-              <Typography>{user.email}</Typography>
-            </Box>
-            <Box className={classes.userInfo}>
-              <PhoneOutlined />
-              <Typography>{user.phone}</Typography>
-            </Box>
-            <Box className={classes.userInfo}>
-              <PhoneOutlined />
-              <Typography>{user.website}</Typography>
-            </Box>
+            {[
+              { icon: <MailOutlined />, text: user.email },
+              { icon: <PhoneOutlined />, text: user.phone },
+              { icon: <PhoneOutlined />, text: user.website },
+            ].map((info, index) => (
+              <Box key={index} className={classes.userInfo}>
+                {info.icon}
+                <Typography>{info.text}</Typography>
+              </Box>
+            ))}
           </Box>
-          <Box style={{ background: "#F8F8F8", padding: "12px 0" }}>
+          <Box
+            style={{ background: Colors.backgroundDefault, padding: "12px 0" }}
+          >
             <Grid container>
-              <Grid item xs={4}>
-                <Box className={classes.iconsParent}>
-                  <HeartOutlined style={{ color: "#ff0000" }} />
-                  {/* <HeartFilled /> */}
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box className={classes.iconsParent}>
-                  <EditOutlined onClick={openModalHandler} />
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box className={classes.iconsParent}>
-                  <DeleteFilled onClick={() => deleteUserHandler(user.id)} />
-                </Box>
-              </Grid>
+              {[
+                {
+                  icon: isFavorite ? <HeartFilled /> : <HeartOutlined />,
+                  className: "heartIcon",
+                  action: "toggleFavourite",
+                },
+                {
+                  icon: <EditOutlined />,
+                  className: "editIcon",
+                  action: handleModalToggle,
+                },
+                {
+                  icon: <DeleteFilled />,
+                  className: "deleteIcon",
+                  action: "delete",
+                },
+              ].map((iconInfo, index) => (
+                <Grid item xs={4} key={index}>
+                  <Box className={classes.iconsParent}>
+                    <span
+                      className={iconInfo.className}
+                      onClick={
+                        typeof iconInfo.action === "string"
+                          ? () => handleUserAction(iconInfo.action)
+                          : iconInfo.action
+                      }
+                    >
+                      {iconInfo.icon}
+                    </span>
+                  </Box>
+                </Grid>
+              ))}
             </Grid>
           </Box>
         </Box>
@@ -125,7 +162,7 @@ const User = ({ user, diceBearUrl }) => {
 
       <EditUser
         openModal={openModal}
-        onCloseModal={closeModalHandler}
+        onCloseModal={handleModalToggle}
         user={user}
       />
     </>

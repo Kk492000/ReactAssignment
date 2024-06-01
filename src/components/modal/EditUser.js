@@ -86,12 +86,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
+  name: Yup.string().required("Name is required."),
   email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  phone: Yup.string().required("Phone number is required"),
-  website: Yup.string().required("Website is required"),
+    .email("Invalid email address.")
+    .required("Email is required."),
+  phone: Yup.string().required("Phone number is required."),
+  website: Yup.string().required("Website is required."),
 });
 
 const EditUser = ({ openModal, onCloseModal, user }) => {
@@ -127,10 +127,8 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
           dispatch(editUser({ ...user, ...values }));
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
+          onCloseModal();
+          setSubmitting(false);
         }}
       >
         {({
@@ -234,7 +232,7 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
                 Cancel
               </Button>
               <ContainedButton type="submit" disabled={isSubmitting}>
-                OK
+                {isSubmitting ? "Submitting" : "OK"}
               </ContainedButton>
             </DialogActions>
           </Form>
