@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiBackdrop-root": {
       background: "transparent",
     },
+    "& .MuiDialogTitle-root , & .MuiDialogContent-root": {
+      padding: "16px 12px",
+    },
     "& .MuiDialog-paperWidthSm": {
       width: "100%",
       maxWidth: "420px",
@@ -36,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         "0px 4px 20px rgba(0, 0, 0, 0.1), 0px 7px 10px rgba(0, 0, 0, 0.1)",
     },
     "& .MuiDialogActions-root": {
-      padding: "10px 20px 10px 0",
+      padding: "10px 0px 2px 0",
       borderTop: `1px solid ${Colors.grayLight}`,
     },
   },
@@ -127,70 +130,72 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
           <CloseOutlined style={{ fontSize: "15px" }} onClick={onCloseModal} />
         </Box>
       </DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          isSubmitting,
-        }) => (
-          <Form>
-            <DialogContent>
-              {[
-                { name: "name", label: "Name", maxLength: 50 },
-                {
-                  name: "email",
-                  label: "Email",
-                  type: "email",
-                },
-                { name: "phone", label: "Phone", type: "tel", maxLength: 20 },
-                { name: "website", label: "Website" },
-              ].map((field) => (
-                <Box key={field.name} className={classes.labelInputContainer}>
-                  <Typography>
-                    <span>*</span>
-                    {field.label}:
-                  </Typography>
-                  <FormControl fullWidth>
-                    <TextField
-                      type={field.type || "text"}
-                      name={field.name}
-                      fullWidth
-                      variant="outlined"
-                      inputProps={{ maxLength: field.maxLength || 255 }}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values[field.name]}
-                    />
-                    <FormHelperText error>
-                      {errors[field.name] && errors[field.name]}
-                    </FormHelperText>
-                  </FormControl>
-                </Box>
-              ))}
-            </DialogContent>
-            <DialogActions>
-              <Button
-                color="primary"
-                className={classes.cancelBtn}
-                variant="outlined"
-                onClick={onCloseModal}
-              >
-                Cancel
-              </Button>
-              <ContainedButton type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting" : "OK"}
-              </ContainedButton>
-            </DialogActions>
-          </Form>
-        )}
-      </Formik>
+      <DialogContent>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            isSubmitting,
+          }) => (
+            <Form>
+              <Box>
+                {[
+                  { name: "name", label: "Name", maxLength: 50 },
+                  {
+                    name: "email",
+                    label: "Email",
+                    type: "email",
+                  },
+                  { name: "phone", label: "Phone", type: "tel", maxLength: 20 },
+                  { name: "website", label: "Website" },
+                ].map((field) => (
+                  <Box key={field.name} className={classes.labelInputContainer}>
+                    <Typography>
+                      <span>*</span>&nbsp;
+                      {field.label}:
+                    </Typography>
+                    <FormControl fullWidth>
+                      <TextField
+                        type={field.type || "text"}
+                        name={field.name}
+                        fullWidth
+                        variant="outlined"
+                        inputProps={{ maxLength: field.maxLength || 255 }}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values[field.name]}
+                      />
+                      <FormHelperText error>
+                        {errors[field.name] && errors[field.name]}
+                      </FormHelperText>
+                    </FormControl>
+                  </Box>
+                ))}
+              </Box>
+              <DialogActions>
+                <Button
+                  color="primary"
+                  className={classes.cancelBtn}
+                  variant="outlined"
+                  onClick={onCloseModal}
+                >
+                  Cancel
+                </Button>
+                <ContainedButton type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting" : "OK"}
+                </ContainedButton>
+              </DialogActions>
+            </Form>
+          )}
+        </Formik>
+      </DialogContent>
     </Dialog>,
     document.getElementById("portal-root")
   );

@@ -6,7 +6,7 @@ const UserList = React.lazy(() => import("./components/ui/UserList"));
 
 function App() {
   return (
-    <div className="App" style={{ width: "100%" }}>
+    <div>
       <Suspense
         fallback={
           <div>
