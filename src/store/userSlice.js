@@ -3,8 +3,19 @@ import axios from "axios";
 import { apiConfig } from "../ApiConfig/apiConfig";
 
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const response = await axios.get(apiConfig.getUsers);
-  return response.data;
+  try {
+    const response = await axios({
+      method: "GET",
+      url: apiConfig.getUsers,
+    });
+    if (response?.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to fetch Data");
+    }
+  } catch (error) {
+    throw new Error("Failed to fetch Data");
+  }
 });
 
 export const editUser = createAsyncThunk("users/editUser", async (user) => {

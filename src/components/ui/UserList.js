@@ -17,6 +17,7 @@ const UserList = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.users.users);
   const status = useSelector((state) => state.users.status);
+  const error = useSelector((state) => state.users.error);
 
   useEffect(() => {
     if (status === "idle") {
@@ -27,12 +28,19 @@ const UserList = () => {
   if (status === "loading") {
     return <Loader />;
   }
+  if (status === "failed") {
+    let errorMsg;
+    if (error) {
+      errorMsg = error;
+    }
+    return errorMsg;
+  }
 
   return (
     <Grid container spacing={3} className={classes.userGridContainer}>
       {users.map((user) => {
         const avatarUrl = `https://api.dicebear.com/8.x/avataaars/svg?seed=${user.username}`;
-        return <User user={user} diceBearUrl={avatarUrl} key={user.id} />;
+        return <User key={user.id} user={user} diceBearUrl={avatarUrl} />;
       })}
     </Grid>
   );

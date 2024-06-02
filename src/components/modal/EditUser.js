@@ -1,3 +1,5 @@
+import React from "react";
+import { createPortal } from "react-dom";
 import {
   Box,
   Button,
@@ -12,9 +14,6 @@ import {
   makeStyles,
   Zoom,
 } from "@material-ui/core";
-import ReactDOM from "react-dom";
-
-import React from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { Formik, Form } from "formik";
 import ContainedButton from "../ui/ContainedButton";
@@ -61,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
       height: "30px",
     },
     "& .MuiOutlinedInput-input": {
-      padding: "7.5px 14px",
+      padding: "7.5px",
       fontSize: "14px",
     },
     "& p": {
@@ -86,12 +85,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required."),
+  name: Yup.string().required("This is a required field."),
   email: Yup.string()
     .email("Invalid email address.")
-    .required("Email is required."),
-  phone: Yup.string().required("Phone number is required."),
-  website: Yup.string().required("Website is required."),
+    .required("This is a required field."),
+  phone: Yup.string().required("This is a required field."),
+  website: Yup.string().required("This is a required field."),
 });
 
 const EditUser = ({ openModal, onCloseModal, user }) => {
@@ -105,9 +104,15 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
     website: user?.website ?? "",
   };
 
+  const handleSubmit = (values, { setSubmitting }) => {
+    dispatch(editUser({ ...user, ...values }));
+    onCloseModal();
+    setSubmitting(false);
+  };
+
   if (!openModal) return null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <Dialog
       TransitionComponent={Zoom}
       keepMounted
@@ -116,7 +121,7 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
       maxWidth="sm"
       open={openModal}
     >
-      <DialogTitle id="alert-dialog-slide-title">
+      <DialogTitle>
         <Box className={classes.dialogHeadContainer}>
           <Typography>Basic Modal</Typography>
           <CloseOutlined style={{ fontSize: "15px" }} onClick={onCloseModal} />
@@ -125,11 +130,7 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          dispatch(editUser({ ...user, ...values }));
-          onCloseModal();
-          setSubmitting(false);
-        }}
+        onSubmit={handleSubmit}
       >
         {({
           values,
@@ -141,87 +142,39 @@ const EditUser = ({ openModal, onCloseModal, user }) => {
         }) => (
           <Form>
             <DialogContent>
-              <Box className={classes.labelInputContainer}>
-                <Typography>
-                  <span>*</span>Name:
-                </Typography>
-                <FormControl fullWidth>
-                  <TextField
-                    type="text"
-                    name="name"
-                    fullWidth
-                    variant="outlined"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name}
-                  />
-                  <FormHelperText error>
-                    {touched.name && errors.name}
-                  </FormHelperText>
-                </FormControl>
-              </Box>
-
-              <Box className={classes.labelInputContainer}>
-                <Typography>
-                  <span>*</span>Email:
-                </Typography>
-                <FormControl fullWidth>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="email"
-                    name="email"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.email}
-                  />
-                  <FormHelperText error>
-                    {touched.email && errors.email}
-                  </FormHelperText>
-                </FormControl>
-              </Box>
-
-              <Box className={classes.labelInputContainer}>
-                <Typography>
-                  <span>*</span>Phone:
-                </Typography>
-                <FormControl fullWidth>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="tel"
-                    name="phone"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.phone}
-                  />
-                  <FormHelperText error>
-                    {touched.phone && errors.phone}
-                  </FormHelperText>
-                </FormControl>
-              </Box>
-
-              <Box className={classes.labelInputContainer}>
-                <Typography>
-                  <span>*</span>Website:
-                </Typography>
-                <FormControl fullWidth>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    type="text"
-                    name="website"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.website}
-                  />
-                  <FormHelperText error>
-                    {touched.website && errors.website}
-                  </FormHelperText>
-                </FormControl>
-              </Box>
+              {[
+                { name: "name", label: "Name", maxLength: 50 },
+                {
+                  name: "email",
+                  label: "Email",
+                  type: "email",
+                },
+                { name: "phone", label: "Phone", type: "tel", maxLength: 20 },
+                { name: "website", label: "Website" },
+              ].map((field) => (
+                <Box key={field.name} className={classes.labelInputContainer}>
+                  <Typography>
+                    <span>*</span>
+                    {field.label}:
+                  </Typography>
+                  <FormControl fullWidth>
+                    <TextField
+                      type={field.type || "text"}
+                      name={field.name}
+                      fullWidth
+                      variant="outlined"
+                      inputProps={{ maxLength: field.maxLength || 255 }}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values[field.name]}
+                    />
+                    <FormHelperText error>
+                      {errors[field.name] && errors[field.name]}
+                    </FormHelperText>
+                  </FormControl>
+                </Box>
+              ))}
             </DialogContent>
-
             <DialogActions>
               <Button
                 color="primary"

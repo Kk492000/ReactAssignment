@@ -44,4 +44,6 @@ export const Colors = {
 
   backgroundDefault: "#FAFAFA",
   backgroundPaper: "#FFFFFF",
+
+  red: "#ff0000",
 };

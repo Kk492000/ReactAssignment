@@ -12,15 +12,16 @@ import EditUser from "../modal/EditUser";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, toggleFavourite } from "../../store/userSlice";
 import { Colors } from "../../constants/colors";
+import LanguageIcon from "@material-ui/icons/Language";
+
+const BORDER = `1px solid ${Colors.border}`;
 
 const useStyles = makeStyles((theme) => ({
   userGridContainer: {
     width: "100%",
-    boxSizing: "border-box",
-    justifyContent: "center",
   },
   gridBox: {
-    border: `0.5px solid ${Colors.border}`,
+    border: BORDER,
     width: "100%",
     borderRadius: "3px",
   },
@@ -37,9 +38,15 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     background: `${Colors.backgroundDefault}`,
+    "& img": {
+      paddingTop: "5px",
+    },
   },
   infoContainer: {
     padding: "20px",
+    "& .MuiSvgIcon-root": {
+      fontSize: "16px",
+    },
     "& .userName": {
       fontFamily: "Mulish",
       marginBottom: "5px",
@@ -47,25 +54,26 @@ const useStyles = makeStyles((theme) => ({
       fontSize: "14px",
     },
   },
+  userActions: {
+    background: Colors.backgroundDefault,
+    padding: "12px 0",
+    borderTop: BORDER,
+  },
   iconsParent: {
     display: "flex",
     justifyContent: "center",
-    borderRight: "1px solid #ccc",
+    borderRight: BORDER,
     "& span": {
       cursor: "pointer",
     },
-    "& .deleteIcon, & .heartIcon": {
-      "&:hover": {
-        color: "#ff0000",
-      },
-    },
     "& .heartIcon": {
-      color: "#ff0000",
+      color: Colors.red,
+      "&:hover": {
+        color: Colors.red,
+      },
     },
     "& .deleteIcon, & .editIcon": {
       color: "gray",
-    },
-    "& .editIcon": {
       "&:hover": {
         color: Colors.primary,
       },
@@ -89,6 +97,10 @@ const User = ({ user, diceBearUrl }) => {
     }
   };
 
+  const navigationHandler = (link) => {
+    window.open(link, "_blank");
+  };
+
   const isFavorite = favourites.includes(user.id);
 
   return (
@@ -104,24 +116,28 @@ const User = ({ user, diceBearUrl }) => {
       >
         <Box className={classes.gridBox}>
           <Box className={classes.imgContainer}>
-            <img src={diceBearUrl} width="100px" alt={user.name} />
+            <img src={diceBearUrl} alt={user.name} loading="lazy" width="100" />
           </Box>
           <Box className={classes.infoContainer}>
             <Typography className="userName">{user.name}</Typography>
             {[
               { icon: <MailOutlined />, text: user.email },
               { icon: <PhoneOutlined />, text: user.phone },
-              { icon: <PhoneOutlined />, text: user.website },
+              {
+                icon: <LanguageIcon />,
+                text: `http://${user.website}`,
+                action: () => {
+                  navigationHandler(`http://${user.website}`);
+                },
+              },
             ].map((info, index) => (
               <Box key={index} className={classes.userInfo}>
                 {info.icon}
-                <Typography>{info.text}</Typography>
+                <Typography onClick={info.action}>{info.text}</Typography>
               </Box>
             ))}
           </Box>
-          <Box
-            style={{ background: Colors.backgroundDefault, padding: "12px 0" }}
-          >
+          <Box className={classes.userActions}>
             <Grid container>
               {[
                 {
