@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { Box, Grid, Typography, withStyles } from "@material-ui/core";
+import React, { useState } from "react";
+import { Box, Grid, Typography, makeStyles } from "@material-ui/core";
 import {
   MailOutlined,
   PhoneOutlined,
@@ -9,14 +9,14 @@ import {
   HeartFilled,
 } from "@ant-design/icons";
 import EditUser from "../modal/EditUser";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, toggleFavourite } from "../../store/userSlice";
 import { Colors } from "../../constants/colors";
 import LanguageIcon from "@material-ui/icons/Language";
 
 const BORDER = `1px solid ${Colors.border}`;
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   userGridContainer: {
     width: "100%",
   },
@@ -79,22 +79,17 @@ const styles = (theme) => ({
       },
     },
   },
-});
+}));
 
-class User extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      openModal: false,
-    };
-  }
+const User = ({ user, diceBearUrl }) => {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
+  const favourites = useSelector((state) => state.users.favourites);
 
-  handleModalToggle = () => {
-    this.setState((prevState) => ({ openModal: !prevState.openModal }));
-  };
+  const handleModalToggle = () => setOpenModal((prev) => !prev);
 
-  handleUserAction = (action) => {
-    const { dispatch, user } = this.props;
+  const handleUserAction = (action) => {
     if (action === "delete") {
       dispatch(deleteUser(user.id));
     } else if (action === "toggleFavourite") {
@@ -102,105 +97,95 @@ class User extends Component {
     }
   };
 
-  navigationHandler = (link) => {
+  const navigationHandler = (link) => {
     window.open(link, "_blank");
   };
 
-  render() {
-    const { classes, user, diceBearUrl, favourites } = this.props;
-    const { openModal } = this.state;
-    const isFavorite = favourites.includes(user.id);
+  const isFavorite = favourites.includes(user.id);
 
-    return (
-      <>
-        <Grid
-          item
-          key={user.id}
-          xs={12}
-          sm={6}
-          md={4}
-          lg={3}
-          className={classes.userGridContainer}
-        >
-          <Box className={classes.gridBox}>
-            <Box className={classes.imgContainer}>
-              <img
-                src={diceBearUrl}
-                alt={user.name}
-                loading="lazy"
-                width="100"
-              />
-            </Box>
-            <Box className={classes.infoContainer}>
-              <Typography className="userName">{user.name}</Typography>
-              {[
-                { icon: <MailOutlined />, text: user.email },
-                { icon: <PhoneOutlined />, text: user.phone },
-                {
-                  icon: <LanguageIcon />,
-                  text: `http://${user.website}`,
-                  action: () => {
-                    this.navigationHandler(`http://${user.website}`);
-                  },
-                },
-              ].map((info, index) => (
-                <Box key={index} className={classes.userInfo}>
-                  {info.icon}
-                  <Typography onClick={info.action}>{info.text}</Typography>
-                </Box>
-              ))}
-            </Box>
-            <Box className={classes.userActions}>
-              <Grid container>
-                {[
-                  {
-                    icon: isFavorite ? <HeartFilled /> : <HeartOutlined />,
-                    className: "heartIcon",
-                    action: "toggleFavourite",
-                  },
-                  {
-                    icon: <EditOutlined />,
-                    className: "editIcon",
-                    action: this.handleModalToggle,
-                  },
-                  {
-                    icon: <DeleteFilled />,
-                    className: "deleteIcon",
-                    action: "delete",
-                  },
-                ].map((iconInfo, index) => (
-                  <Grid item xs={4} key={index}>
-                    <Box className={classes.iconsParent}>
-                      <span
-                        className={iconInfo.className}
-                        onClick={
-                          typeof iconInfo.action === "string"
-                            ? () => this.handleUserAction(iconInfo.action)
-                            : iconInfo.action
-                        }
-                      >
-                        {iconInfo.icon}
-                      </span>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+  return (
+    <>
+      <Grid
+        item
+        key={user.id}
+        xs={12}
+        sm={6}
+        md={4}
+        lg={3}
+        className={classes.userGridContainer}
+      >
+        <Box className={classes.gridBox}>
+          <Box className={classes.imgContainer}>
+            <img src={diceBearUrl} alt={user.name} loading="lazy" width="100" />
           </Box>
-        </Grid>
+          <Box className={classes.infoContainer}>
+            <Typography className="userName">{user.name}</Typography>
+            {[
+              { icon: <MailOutlined />, text: user.email },
+              { icon: <PhoneOutlined />, text: user.phone },
+              {
+                icon: <LanguageIcon />,
+                text: `http://${user.website}`,
+                action: () => {
+                  navigationHandler(`http://${user.website}`);
+                },
+              },
+            ].map((info, index) => (
+              <Box key={index} className={classes.userInfo}>
+                {info.icon}
+                <Typography onClick={info.action}>{info.text}</Typography>
+              </Box>
+            ))}
+          </Box>
+          <Box className={classes.userActions}>
+            <Grid container>
+              {[
+                {
+                  icon: isFavorite ? <HeartFilled /> : <HeartOutlined />,
+                  className: "heartIcon",
+                  action: "toggleFavourite",
+                },
+                {
+                  icon: <EditOutlined />,
+                  className: "editIcon",
+                  action: handleModalToggle,
+                },
+                {
+                  icon: <DeleteFilled />,
+                  className: "deleteIcon",
+                  action: "delete",
+                },
+              ].map((iconInfo, index) => (
+                <Grid item xs={4} key={index}>
+                  <Box
+                    className={classes.iconsParent}
+                    style={{ borderRight: index === 2 && "none" }}
+                  >
+                    <span
+                      className={iconInfo.className}
+                      onClick={
+                        typeof iconInfo.action === "string"
+                          ? () => handleUserAction(iconInfo.action)
+                          : iconInfo.action
+                      }
+                    >
+                      {iconInfo.icon}
+                    </span>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Box>
+      </Grid>
 
-        <EditUser
-          openModal={openModal}
-          onCloseModal={this.handleModalToggle}
-          user={user}
-        />
-      </>
-    );
-  }
-}
+      <EditUser
+        openModal={openModal}
+        onCloseModal={handleModalToggle}
+        user={user}
+      />
+    </>
+  );
+};
 
-const mapStateToProps = (state) => ({
-  favourites: state.users.favourites,
-});
-
-export default connect(mapStateToProps)(withStyles(styles)(User));
+export default User;
